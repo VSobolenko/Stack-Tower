@@ -1,0 +1,20 @@
+{
+    "name": "StackTower.Editor",
+    "rootNamespace": "StackTower",
+    "references": [
+        "GUID:f26980414a6f2de42b42d7d5e80f2ac3",
+        "GUID:6d4c70692dc2cfc4e8894236e1c545d0",
+        "GUID:34481c7d93e353d46906315c025f3a06"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using StackTower.Code.Common;
 using UnityEngine;
@@ -6,66 +7,81 @@ using Random = UnityEngine.Random;
 
 namespace StackTower.Code.Game.Logics
 {
-internal class Tower<T> : ITower<T> where T : IStackableShape
+internal class Tower<T> : ITower<T>, ITowerListSavable<T> where T : IStackableShape
 {
+    public LinkedList<T> Chain { get; set; } = new();
+    
     private readonly Rect _fillArea;
-    private readonly LinkedList<T> _tower = new();
 
     public Tower(Rect fillArea)
     {
         _fillArea = fillArea;
     }
 
-    public bool TryInsertShape(T shape)
+    public TowerInsertResponse TryInsertShape(T shape)
     {
         if (shape == null)
             throw new ArgumentNullException(nameof(shape), "Null shape Not supported!");
 
-        if (_tower.Count == 0)
+        switch (Chain.Count)
         {
-            _tower.AddFirst(shape);
+            case 0 when _fillArea.IsFullInside(shape.Rect):
+                Chain.AddFirst(shape);
 
-            return true;
+                return TowerInsertResponse.InsertSuccess;
+            case 0:
+                return TowerInsertResponse.OutsideFillArea;
         }
 
-        var lastNode = _tower.Last;
+        var lastNode = Chain.Last;
 
-        if (shape.Rect.IntersectsWith(lastNode.Value.Rect) == false)
-            return false;
+        if (IsAnyIntersectWithTower(shape) == false)
+            return TowerInsertResponse.NotIntersectsWithTower;
 
         var y = GetHeightCenterForInsertShape(lastNode.Value, shape);
 
         if (FillAreaContainsYPoint(y) == false)
-            return false;
+            return TowerInsertResponse.HeightLimit;
 
         InsertShape(lastNode, shape);
 
-        return true;
+        return TowerInsertResponse.InsertSuccess;
     }
 
-    public bool TryRemoveShape(T shape)
+    private bool IsAnyIntersectWithTower(T shape)
+    {
+        for (var node = Chain.First; node != null; node = node.Next)
+            if (shape.Rect.IntersectsWith(node.Value.Rect))
+                return true;
+
+        return false;
+    }
+
+    public TowerRemoveResponse TryRemoveShape(T shape)
     {
         if (shape == null)
             throw new ArgumentNullException(nameof(shape), "Null shape Not supported!");
 
-        if (_tower.Contains(shape) == false)
-            return false;
+        if (Chain.Contains(shape) == false)
+            return TowerRemoveResponse.UnknownShape;
 
-        var deletedNode = _tower.Find(shape);
+        var deletedNode = Chain.Find(shape);
 
         if (deletedNode == null)
-            return false;
+            return TowerRemoveResponse.UnknownShape;
 
         var recalculateFrom = deletedNode.Next;
-        _tower.Remove(deletedNode);
-        RecalculateShapeRectUpcastAfterDeleteNode(recalculateFrom, deletedNode, recalculateFrom == _tower.First);
+        Chain.Remove(deletedNode);
+        RecalculateShapeRectUpcastAfterDeleteNode(recalculateFrom, deletedNode, recalculateFrom == Chain.First);
 
-        return true;
+        return TowerRemoveResponse.RemoveSuccess;
     }
+
+    public bool Contains(T shape) => Chain.Contains(shape);
 
     private void InsertShape(LinkedListNode<T> after, T shape)
     {
-        _tower.AddAfter(after, shape);
+        Chain.AddAfter(after, shape);
 
         var x = GetRandomCanterWeightForInsertShape(after.Value);
         var y = GetHeightCenterForInsertShape(after.Value, shape);
@@ -78,10 +94,10 @@ internal class Tower<T> : ITower<T> where T : IStackableShape
     {
         for (var node = recalculateFrom; node != null; node = node.Next)
         {
-            if (node == _tower.First && deletedWasFirst == false)
+            if (node == Chain.First && deletedWasFirst == false)
                 continue;
 
-            var isRecalculatedFirstNode = node == _tower.First && deletedWasFirst;
+            var isRecalculatedFirstNode = node == Chain.First && deletedWasFirst;
 
             var shape = node.Value;
             var prevShape = isRecalculatedFirstNode ? deleted.Value : node.Previous!.Value;
@@ -95,7 +111,7 @@ internal class Tower<T> : ITower<T> where T : IStackableShape
     private bool FillAreaContainsYPoint(float yPoint) => yPoint.IsInRange(_fillArea.yMin, _fillArea.yMax);
 
     private static float GetRandomCanterWeightForInsertShape(T exist) =>
-        Random.Range(exist.Rect.xMin - exist.Rect.width / 2, exist.Rect.xMax - exist.Rect.width / 2);
+        Random.Range(exist.Rect.xMin, exist.Rect.xMax);
 
     private static float GetRelativeCenterWeightForShiftable(T exist, T shiftable) =>
         Mathf.Clamp(shiftable.Rect.center.x, exist.Rect.xMin, exist.Rect.xMax);
@@ -113,5 +129,8 @@ internal class Tower<T> : ITower<T> where T : IStackableShape
 
         return Mathf.Clamp(x, minX, maxX);
     }
+
+    IEnumerator<T> IEnumerable<T>.GetEnumerator() => Chain.GetEnumerator();
+    public IEnumerator GetEnumerator() => Chain.GetEnumerator();
 }
 }

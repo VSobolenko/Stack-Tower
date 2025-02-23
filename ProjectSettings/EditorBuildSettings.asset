@@ -8,4 +8,5 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_StackTower/Scenes/Main.unity
     guid: 2cda990e2423bbf4892e6590ba056729
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 2116cc28179c57141b0d0523bec2f372, type: 2}

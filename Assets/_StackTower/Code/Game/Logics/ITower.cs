@@ -1,8 +1,27 @@
-﻿namespace StackTower.Code.Game.Logics
+﻿using System.Collections.Generic;
+
+namespace StackTower.Code.Game.Logics
 {
-internal interface ITower<in T> where T : IStackableShape
+internal interface ITower<T> : IEnumerable<T> where T : IStackableShape
 {
-    bool TryInsertShape(T shape);
-    bool TryRemoveShape(T shape);
+    TowerInsertResponse TryInsertShape(T shape);
+    TowerRemoveResponse TryRemoveShape(T shape);
+    bool Contains(T shape);
+}
+
+internal enum TowerInsertResponse : byte
+{
+    Unknown = 0,
+    InsertSuccess = 1,
+    NotIntersectsWithTower = 2,
+    OutsideFillArea = 3,
+    HeightLimit = 4,
+}
+
+internal enum TowerRemoveResponse : byte
+{
+    Unknown = 0,
+    RemoveSuccess = 1,
+    UnknownShape = 2,
 }
 }
