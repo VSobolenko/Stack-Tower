@@ -10,6 +10,6 @@ internal interface IDraggableObject<out T> : IPointerDownHandler, IDragHandler, 
     public event Action<PointerEventData, T> PointerBeginDrag;
     public event Action<PointerEventData, T> PointerDrag;
     public event Action<PointerEventData, T> PointerUp;
-    Vector3 Position { get; set; }
+    Vector3 WorldPosition { get; set; }
 }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using DG.Tweening;
 using Game.Extensions;
+using StackTower.Code.Common;
 using StackTower.Code.Game.Drag;
 using StackTower.Code.Game.Logics;
 using UnityEditor;
@@ -25,10 +26,16 @@ internal class CubeViewUI : ShapeViewUI<CubeModel>, IDraggableObject<CubeViewUI>
 
     public RectTransform SelfTransform => _self;
 
-    public Vector3 Position
+    public Vector3 AnchorPosition
     {
-        get => transform.position;
-        set => transform.position = value;
+        get => SelfTransform.anchoredPosition;
+        set => SelfTransform.anchoredPosition = value;
+    }
+
+    public Vector3 WorldPosition
+    {
+        get => SelfTransform.position;
+        set => SelfTransform.position = value;
     }
 
     private Tween _animationTween;
@@ -55,37 +62,39 @@ internal class CubeViewUI : ShapeViewUI<CubeModel>, IDraggableObject<CubeViewUI>
     {
         KillTweenAnimations();
         var sequence = DOTween.Sequence();
-        sequence.Append(transform.DOMoveY(rectCenter.y + Model.Rect.height / 3f, _animationDuration)
-                                 .SetEase(Ease.OutQuad))
-                .Append(transform.DOMove(rectCenter, _animationDuration).SetEase(Ease.InQuad));
+        sequence.Append(SelfTransform.DOAnchorPosY(rectCenter.y + Model.Rect.height / 3f, _animationDuration)
+                                     .SetEase(Ease.OutQuad))
+                .Append(SelfTransform.DOAnchorPos(rectCenter, _animationDuration).SetEase(Ease.InQuad));
         _animationTween = sequence;
     }
 
     public void AnimateLowerDown(Vector2 rectCenter, float delay)
     {
         KillTweenAnimations();
-        _animationTween = transform.DOMove(rectCenter, _animationDuration).SetEase(Ease.InOutQuad).SetDelay(delay);
+        _animationTween = SelfTransform.DOAnchorPos(rectCenter, _animationDuration).SetEase(Ease.InOutQuad)
+                                       .SetDelay(delay);
     }
 
     public void AnimateMissedTower(Action<CubeViewUI> fallback)
     {
         KillTweenAnimations();
         var sequence = DOTween.Sequence();
-        sequence.Append(transform.DOScale(Vector3.zero, _animationDuration).SetEase(Ease.InBack))
-                .Join(transform.DORotate(Vector3.forward * 180, _animationDuration, RotateMode.FastBeyond360))
+        sequence.Append(SelfTransform.DOScale(Vector3.zero, _animationDuration).SetEase(Ease.InBack))
+                .Join(SelfTransform.DORotate(Vector3.forward * 180, _animationDuration, RotateMode.FastBeyond360))
                 .OnComplete(() => fallback?.Invoke(this));
 
         _animationTween = sequence;
     }
 
-    public void AnimateFallToHole(Vector3 holePosition, Action<CubeViewUI> fallback)
+    public void AnimateFallToHole(Vector3 holeAnchorPosition, Action<CubeViewUI> fallback)
     {
         KillTweenAnimations();
 
         var sequence = DOTween.Sequence();
-        sequence.Append(transform.DORotate(new Vector3(0, 0, 360), 1f, RotateMode.FastBeyond360).SetEase(Ease.InQuad))
-                .Join(transform.DOMove(holePosition, 1f).SetEase(Ease.InExpo))
-                .Join(transform.DOScale(Vector3.one * 0.7f, 1f).SetEase(Ease.InExpo))
+        sequence.Append(SelfTransform.DORotate(new Vector3(0, 0, 360), 1f, RotateMode.FastBeyond360)
+                                     .SetEase(Ease.InQuad))
+                .Join(SelfTransform.DOAnchorPos(holeAnchorPosition, 1f).SetEase(Ease.InExpo))
+                .Join(SelfTransform.DOScale(Vector3.one * 0.7f, 1f).SetEase(Ease.InExpo))
                 .OnComplete(() => fallback?.Invoke(this));
 
         _animationTween = sequence;

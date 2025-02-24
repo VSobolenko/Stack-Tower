@@ -63,8 +63,7 @@ internal class SaveLoadDirector : ISaveLoadDirector
             var position = new Vector2(serializableModel.PosX, serializableModel.PosY);
             var rectSize = new Vector2(serializableModel.RectWidth, serializableModel.RectHeight);
             var rect = new Rect(position, rectSize);
-
-            shapes[i].Position = rect.center;
+            shapes[i].AnchorPosition = rect.center;
             shapes[i].Model.Rect = rect;
             _savableTower.Chain.AddLast(shapes[i].Model);
         }

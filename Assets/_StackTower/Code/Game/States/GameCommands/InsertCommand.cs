@@ -31,7 +31,7 @@ internal class InsertCommand : ICommand
 
     public void Execute(CubeViewUI cubeView)
     {
-        cubeView.Model.Rect = cubeView.SelfTransform.ViewRect(_sceneComponents.canvas.localScale);
+        cubeView.Model.Rect = cubeView.SelfTransform.ViewRect();
 
         var result = _tower.TryInsertShape(cubeView.Model);
         if (result == TowerInsertResponse.InsertSuccess)
@@ -52,7 +52,7 @@ internal class InsertCommand : ICommand
 
         if (IsShapeOverHole(cubeView))
         {
-            var point = _sceneComponents.holePit.position;
+            var point = _sceneComponents.holePit.anchoredPosition;
             var parent = _sceneComponents.fallHoleParent;
 
             cubeView.transform.SetParent(parent);
@@ -67,7 +67,6 @@ internal class InsertCommand : ICommand
     }
 
     private bool IsShapeOverHole(CubeViewUI cubeView) =>
-        _sceneComponents.holeRectTransform.ViewRect(_sceneComponents.canvas.localScale)
-                        .IsFullInside(cubeView.SelfTransform.ViewRect(_sceneComponents.canvas.localScale));
+        _sceneComponents.holeRectTransform.IsFullInside(cubeView.SelfTransform, _sceneComponents.canvas.localScale);
 }
 }

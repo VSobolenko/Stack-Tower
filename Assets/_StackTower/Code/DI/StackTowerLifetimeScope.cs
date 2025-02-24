@@ -96,9 +96,9 @@ public class StackTowerLifetimeScope : LifetimeScope
         builder.Register<Tower<CubeModel>>(Lifetime.Scoped)
                .As<ITower<CubeModel>>()
                .As<ITowerListSavable<CubeModel>>()
-               .WithParameter<Func<Rect>>(
-                   () => _sceneComponents.towerRectTransform.ViewRect(_sceneComponents.canvas.localScale)
-                   );
+               .WithParameter<Func<Rect>>( // Canvas Update after bindings
+                   () => _sceneComponents.towerRectTransform.ViewRect()
+               );
     }
 }
 
@@ -111,6 +111,6 @@ public class SceneComponents
     public RectTransform towerRectTransform;
     public RectTransform holeRectTransform;
     public Transform fallHoleParent;
-    public Transform holePit;
+    public RectTransform holePit;
 }
 }

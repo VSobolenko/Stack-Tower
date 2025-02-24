@@ -1,10 +1,9 @@
 using System;
 using Game.Extensions;
 using NaughtyAttributes;
-using StackTower.Code.Common;
 using UnityEngine;
 
-namespace StackTower.Code.Game.View
+namespace StackTower.Code.Common
 {
 [CreateAssetMenu(menuName = "Stack Tower/ShapeConfig", fileName = nameof(ShapeConfig), order = 0)]
 internal class ShapeConfig : ScriptableObject

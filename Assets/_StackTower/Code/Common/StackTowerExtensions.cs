@@ -8,14 +8,12 @@ internal static class StackTowerExtensions
     public static bool IsInRange<T>(this T value, T min, T max) where T : IComparable<T>
         => value.CompareTo(min) >= 0 && value.CompareTo(max) <= 0;
 
-    public static Rect ViewRect(this RectTransform transform, Vector2 scaler)
+    public static Rect ViewRect(this RectTransform transform)
     {
         var rect = transform.rect;
-        var position = transform.position;
-        var posX = position.x - rect.width / 2f * scaler.x;
-        var posY = position.y - rect.height / 2f * scaler.y;
+        var position = transform.anchoredPosition;
 
-        return new Rect(posX, posY, rect.width * scaler.x, rect.height * scaler.y);
+        return GetRect(position, rect, Vector2.one);
     }
 
     public static bool ContainsPoint(this Rect rect, Vector2 point) =>
@@ -25,6 +23,25 @@ internal static class StackTowerExtensions
     public static bool IntersectsWith(this Rect rect1, Rect rect2) => rect1.Overlaps(rect2);
 
     public static bool IsFullInside(this Rect parent, Rect child) => parent.IsInsideX(child) && parent.IsInsideY(child);
+
+    public static bool IsFullInside(this RectTransform parent, RectTransform child, Vector2 scaler)
+    {
+        var parentPos = parent.position;
+        var childPos = child.position;
+
+        var rectParent = GetRect(parentPos, parent.rect, scaler);
+        var rectChild = GetRect(childPos, child.rect, scaler);
+
+        return rectParent.IsFullInside(rectChild);
+    }
+
+    private static Rect GetRect(Vector2 position, Rect rect, Vector2 scaler)
+    {
+        var posX = position.x - rect.width / 2f * scaler.x;
+        var posY = position.y - rect.height / 2f * scaler.y;
+
+        return new Rect(posX, posY, rect.width * scaler.x, rect.height * scaler.y);
+    }
 
     public static bool IsInsideX(this Rect outer, Rect inner) => inner.xMin >= outer.xMin && inner.xMax <= outer.xMax;
 

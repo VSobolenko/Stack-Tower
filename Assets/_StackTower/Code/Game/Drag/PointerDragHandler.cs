@@ -56,7 +56,7 @@ internal class PointerDragHandler<T> : IEnumerable<T> where T : IDraggableObject
         if (_offsets.TryGetValue(draggable, out _) == false)
             CachePressedPositionOffset(eventData, draggable);
 
-        draggable.Position = eventData.position + _offsets[draggable];
+        draggable.WorldPosition = eventData.position + _offsets[draggable];
     }
 
     private void OnPointerUp(PointerEventData eventData, T draggable)
@@ -67,7 +67,7 @@ internal class PointerDragHandler<T> : IEnumerable<T> where T : IDraggableObject
 
     private void CachePressedPositionOffset(PointerEventData eventData, T draggable)
     {
-        var offset = (Vector2) draggable.Position - eventData.pressPosition;
+        var offset = (Vector2) draggable.WorldPosition - eventData.pressPosition;
         _offsets[draggable] = offset;
     }
 

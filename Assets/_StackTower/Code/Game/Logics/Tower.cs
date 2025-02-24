@@ -11,10 +11,10 @@ internal class Tower<T> : ITower<T>, ITowerListSavable<T> where T : IStackableSh
 {
     public LinkedList<T> Chain { get; set; } = new();
 
-    private Rect FillArea => _fillAreaGetter.Invoke();
-    private readonly Func<Rect> _fillAreaGetter;
+    private Rect FillArea => _fillAreaFunc.Invoke();
+    private readonly Func<Rect> _fillAreaFunc;
 
-    public Tower(Func<Rect> fillAreaGetter) => _fillAreaGetter = fillAreaGetter;
+    public Tower(Func<Rect> fillAreaGetter) => _fillAreaFunc = fillAreaGetter;
 
     public TowerInsertResponse TryInsertShape(T shape)
     {

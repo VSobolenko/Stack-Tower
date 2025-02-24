@@ -67,7 +67,7 @@ internal class GameState : IDisposable
     private CubeViewUI CreateCube(IStackableShape model, PointerEventData eventData)
     {
         var dragged = _shapeFactory.CreateCube(model.Id, _sceneComponents.dragArea);
-        dragged.Position = eventData.position;
+        dragged.AnchorPosition = eventData.position;
         dragged.transform.SetAsLastSibling();
 
         return dragged;
@@ -79,6 +79,9 @@ internal class GameState : IDisposable
         foreach (var cubeModel in _tower)
         {
             var cubeView = _pointerDragHandler.GetFirst(x => x.Model == cubeModel);
+            if ((Vector2)cubeView.AnchorPosition == cubeModel.Rect.center)
+                continue;
+            
             cubeView.AnimateLowerDown(cubeModel.Rect.center, animationDelay);
             animationDelay += delayStep;
         }
