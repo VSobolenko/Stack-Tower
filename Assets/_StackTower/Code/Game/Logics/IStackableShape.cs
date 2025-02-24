@@ -1,22 +1,21 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace StackTower.Code.Game.Logics
 {
 public interface IStackableShape
 {
-    int Id { get; }
+    int Id { get; set; }
     Rect Rect { get; set; }
 }
 
-public class CubeModel : IStackableShape
+internal class CubeModel : IStackableShape
 {
     public CubeModel(int id)
     {
         Id = id;
     }
 
-    public int Id { get; }
+    public int Id { get; set; }
     public Rect Rect { get; set; }
 
     public override string ToString() => $"Id={Id}; Rect={Rect}";

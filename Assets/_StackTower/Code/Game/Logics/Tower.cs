@@ -10,13 +10,11 @@ namespace StackTower.Code.Game.Logics
 internal class Tower<T> : ITower<T>, ITowerListSavable<T> where T : IStackableShape
 {
     public LinkedList<T> Chain { get; set; } = new();
-    
-    private readonly Rect _fillArea;
 
-    public Tower(Rect fillArea)
-    {
-        _fillArea = fillArea;
-    }
+    private Rect FillArea => _fillAreaGetter.Invoke();
+    private readonly Func<Rect> _fillAreaGetter;
+
+    public Tower(Func<Rect> fillAreaGetter) => _fillAreaGetter = fillAreaGetter;
 
     public TowerInsertResponse TryInsertShape(T shape)
     {
@@ -25,7 +23,7 @@ internal class Tower<T> : ITower<T>, ITowerListSavable<T> where T : IStackableSh
 
         switch (Chain.Count)
         {
-            case 0 when _fillArea.IsFullInside(shape.Rect):
+            case 0 when FillArea.IsFullInside(shape.Rect):
                 Chain.AddFirst(shape);
 
                 return TowerInsertResponse.InsertSuccess;
@@ -33,11 +31,10 @@ internal class Tower<T> : ITower<T>, ITowerListSavable<T> where T : IStackableSh
                 return TowerInsertResponse.OutsideFillArea;
         }
 
-        var lastNode = Chain.Last;
-
         if (IsAnyIntersectWithTower(shape) == false)
             return TowerInsertResponse.NotIntersectsWithTower;
 
+        var lastNode = Chain.Last;
         var y = GetHeightCenterForInsertShape(lastNode.Value, shape);
 
         if (FillAreaContainsYPoint(y) == false)
@@ -108,7 +105,7 @@ internal class Tower<T> : ITower<T>, ITowerListSavable<T> where T : IStackableSh
         }
     }
 
-    private bool FillAreaContainsYPoint(float yPoint) => yPoint.IsInRange(_fillArea.yMin, _fillArea.yMax);
+    private bool FillAreaContainsYPoint(float yPoint) => yPoint.IsInRange(FillArea.yMin, FillArea.yMax);
 
     private static float GetRandomCanterWeightForInsertShape(T exist) =>
         Random.Range(exist.Rect.xMin, exist.Rect.xMax);
@@ -124,8 +121,8 @@ internal class Tower<T> : ITower<T>, ITowerListSavable<T> where T : IStackableSh
 
     private float ClampRectXInsideFillAreaByWidth(T shape, float x)
     {
-        var minX = _fillArea.xMin + shape.Rect.width / 2;
-        var maxX = _fillArea.xMax - shape.Rect.width / 2;
+        var minX = FillArea.xMin + shape.Rect.width / 2;
+        var maxX = FillArea.xMax - shape.Rect.width / 2;
 
         return Mathf.Clamp(x, minX, maxX);
     }

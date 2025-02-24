@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace StackTower.Code.Game.Drag
 {
-internal interface IDraggableObject<out T> : IPointerDownHandler, IDragHandler, IPointerUpHandler, IBeginDragHandler 
+internal interface IDraggableObject<out T> : IPointerDownHandler, IDragHandler, IPointerUpHandler, IBeginDragHandler
 {
     public event Action<PointerEventData, T> PointerDown;
     public event Action<PointerEventData, T> PointerBeginDrag;

@@ -1,5 +1,4 @@
 ﻿using System;
-using Game.Pools;
 using StackTower.Code.DI;
 using StackTower.Code.Game.Drag;
 using StackTower.Code.Game.Logics;
@@ -16,29 +15,35 @@ namespace StackTower.Code.Game.States
 internal class GameState : IDisposable
 {
     private readonly IShapeViewUIFactory _shapeFactory;
-    private readonly ITower<CubeModel> _tower;
     private readonly SceneComponents _sceneComponents;
     private readonly TowerInvoker _invoker;
     private readonly PointerDragHandler<CubeViewUI> _pointerDragHandler;
     private readonly IObjectResolver _objectResolver;
     private readonly ISaveLoadDirector _saveLoadDirector;
+    private readonly ITower<CubeModel> _tower;
 
     private HorizontalScrollDragHandler<CubeViewUI> _scrollDragHandler;
 
-    public GameState(SceneComponents sceneComponents, IObjectPoolManager pool, IShapeViewUIFactory shapeFactory,
-                     ITower<CubeModel> tower, TowerInvoker invoker, PointerDragHandler<CubeViewUI> pointerDragHandler, IObjectResolver objectResolver, ISaveLoadDirector saveLoadDirector)
+    public GameState(SceneComponents sceneComponents,
+                     IShapeViewUIFactory shapeFactory,
+                     TowerInvoker invoker,
+                     PointerDragHandler<CubeViewUI> pointerDragHandler,
+                     IObjectResolver objectResolver,
+                     ISaveLoadDirector saveLoadDirector,
+                     ITower<CubeModel> tower)
     {
         _sceneComponents = sceneComponents;
         _shapeFactory = shapeFactory;
-        _tower = tower;
         _invoker = invoker;
         _pointerDragHandler = pointerDragHandler;
         _objectResolver = objectResolver;
         _saveLoadDirector = saveLoadDirector;
+        _tower = tower;
     }
 
     public void Enter(HorizontalScrollDragHandler<CubeViewUI> scrollDragHandler)
     {
+        UpdateTowerView(0);
         _scrollDragHandler = scrollDragHandler;
 
         var insertCommand = _objectResolver.Resolve<InsertCommand>();
@@ -68,11 +73,15 @@ internal class GameState : IDisposable
         return dragged;
     }
 
-    private static void EventDataControlInterception<T>(T to, PointerEventData eventData)
-        where T : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+    public void UpdateTowerView(float delayStep = 0.05f)
     {
-        eventData.pointerPress = to.gameObject;
-        eventData.pointerDrag = to.gameObject;
+        var animationDelay = 0f;
+        foreach (var cubeModel in _tower)
+        {
+            var cubeView = _pointerDragHandler.GetFirst(x => x.Model == cubeModel);
+            cubeView.AnimateLowerDown(cubeModel.Rect.center, animationDelay);
+            animationDelay += delayStep;
+        }
     }
 
     public void Dispose()
@@ -81,6 +90,13 @@ internal class GameState : IDisposable
         _pointerDragHandler.OnDraggableUp -= _invoker.GetActionCommand(TowerAction.Remove).Execute;
         _scrollDragHandler.OnItemStartDragAndDrop -= OnStartDragNewShape;
         _saveLoadDirector.SaveProgress();
+    }
+
+    private static void EventDataControlInterception<T>(T to, PointerEventData eventData)
+        where T : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+    {
+        eventData.pointerPress = to.gameObject;
+        eventData.pointerDrag = to.gameObject;
     }
 }
 }

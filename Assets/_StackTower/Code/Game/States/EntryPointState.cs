@@ -1,13 +1,10 @@
 ﻿using StackTower.Code.Common;
 using StackTower.Code.DI;
 using StackTower.Code.Game.Drag;
-using StackTower.Code.Game.Logics;
 using StackTower.Code.Game.SaveLoad;
 using StackTower.Code.Game.View;
 using StackTower.Code.Game.View.Factories;
 using StackTower.Code.Game.View.Informers;
-using UnityEngine;
-using UnityEngine.EventSystems;
 using VContainer;
 using VContainer.Unity;
 
@@ -23,8 +20,13 @@ internal class EntryPointState : IInitializable
     private readonly PointerDragHandler<CubeViewUI> _pointerDragHandler;
     private readonly IInformer _informer;
 
-    public EntryPointState(IShapeViewUIFactory shapeFactory, StaticDataDirector staticDataDirector,
-                           SceneComponents sceneComponents, IObjectResolver resolver, ISaveLoadDirector saveLoadDirector, PointerDragHandler<CubeViewUI> pointerDragHandler, IInformer informer)
+    public EntryPointState(IShapeViewUIFactory shapeFactory,
+                           StaticDataDirector staticDataDirector,
+                           SceneComponents sceneComponents,
+                           IObjectResolver resolver,
+                           ISaveLoadDirector saveLoadDirector,
+                           PointerDragHandler<CubeViewUI> pointerDragHandler,
+                           IInformer informer)
     {
         _shapeFactory = shapeFactory;
         _staticDataDirector = staticDataDirector;

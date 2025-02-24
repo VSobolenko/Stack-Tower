@@ -17,9 +17,10 @@ internal class TowerInvoker
     public TowerInvoker SetActionCommand(TowerAction actionType, ICommand command)
     {
         _commands[actionType] = command;
+
         return this;
     }
-    
+
     public ICommand GetActionCommand(TowerAction actionType) => _commands[actionType];
 
     public void ExecuteWithCube(TowerAction actionType, CubeViewUI cubeView)

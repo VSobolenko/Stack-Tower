@@ -5,7 +5,6 @@ using StackTower.Code.Game.Drag;
 using StackTower.Code.Game.Logics;
 using StackTower.Code.Game.View;
 using StackTower.Code.Game.View.Informers;
-using UnityEngine;
 
 namespace StackTower.Code.Game.States.GameCommands
 {
@@ -17,8 +16,11 @@ internal class InsertCommand : ICommand
     private readonly PointerDragHandler<CubeViewUI> _pointerDragHandler;
     private readonly IInformer _informer;
 
-    public InsertCommand(ITower<CubeModel> receiver, SceneComponents sceneComponents, IObjectPoolManager pool,
-                         PointerDragHandler<CubeViewUI> pointerDragHandler, IInformer informer)
+    public InsertCommand(ITower<CubeModel> receiver,
+                         SceneComponents sceneComponents,
+                         IObjectPoolManager pool,
+                         PointerDragHandler<CubeViewUI> pointerDragHandler,
+                         IInformer informer)
     {
         _tower = receiver;
         _sceneComponents = sceneComponents;
@@ -29,7 +31,7 @@ internal class InsertCommand : ICommand
 
     public void Execute(CubeViewUI cubeView)
     {
-        cubeView.Model.Rect = cubeView.SelfTransform.ViewRect();
+        cubeView.Model.Rect = cubeView.SelfTransform.ViewRect(_sceneComponents.canvas.localScale);
 
         var result = _tower.TryInsertShape(cubeView.Model);
         if (result == TowerInsertResponse.InsertSuccess)
@@ -65,6 +67,7 @@ internal class InsertCommand : ICommand
     }
 
     private bool IsShapeOverHole(CubeViewUI cubeView) =>
-        _sceneComponents.holeRectTransform.ViewRect().IsFullInside(cubeView.SelfTransform.ViewRect());
+        _sceneComponents.holeRectTransform.ViewRect(_sceneComponents.canvas.localScale)
+                        .IsFullInside(cubeView.SelfTransform.ViewRect(_sceneComponents.canvas.localScale));
 }
 }

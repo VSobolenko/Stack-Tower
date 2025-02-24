@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using StackTower.Code.Game.Logics;
-using StackTower.Code.Game.View;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -14,13 +12,13 @@ internal class PointerDragHandler<T> : IEnumerable<T> where T : IDraggableObject
     private readonly Dictionary<T, Vector2> _offsets = new();
     public event Action<T> OnDraggableUp;
     public event Action<T> OnDraggableDown;
-    
+
     public void Listen(params T[] draggableObjects)
     {
         foreach (var draggableObject in draggableObjects)
         {
             SubscribeToDraggableEvents(draggableObject);
-            _offsets[draggableObject] = Vector2.zero;           
+            _offsets[draggableObject] = Vector2.zero;
         }
     }
 
@@ -55,9 +53,9 @@ internal class PointerDragHandler<T> : IEnumerable<T> where T : IDraggableObject
 
     private void OnPointerDrag(PointerEventData eventData, T draggable)
     {
-        if (_offsets.TryGetValue(draggable, out _) == false) 
+        if (_offsets.TryGetValue(draggable, out _) == false)
             CachePressedPositionOffset(eventData, draggable);
-        
+
         draggable.Position = eventData.position + _offsets[draggable];
     }
 

@@ -8,20 +8,14 @@ internal static class StackTowerExtensions
     public static bool IsInRange<T>(this T value, T min, T max) where T : IComparable<T>
         => value.CompareTo(min) >= 0 && value.CompareTo(max) <= 0;
 
-    public static Rect ViewRect(this RectTransform transform)
+    public static Rect ViewRect(this RectTransform transform, Vector2 scaler)
     {
         var rect = transform.rect;
         var position = transform.position;
-        
-        return ViewRect(rect, position);
-    }
+        var posX = position.x - rect.width / 2f * scaler.x;
+        var posY = position.y - rect.height / 2f * scaler.y;
 
-    public static Rect ViewRect(this Rect rect, Vector3 position)
-    {
-        var posX = position.x - rect.width / 2f;
-        var posY = position.y - rect.height / 2f;
-
-        return new Rect(posX, posY, rect.width, rect.height);
+        return new Rect(posX, posY, rect.width * scaler.x, rect.height * scaler.y);
     }
 
     public static bool ContainsPoint(this Rect rect, Vector2 point) =>
@@ -35,7 +29,7 @@ internal static class StackTowerExtensions
     public static bool IsInsideX(this Rect outer, Rect inner) => inner.xMin >= outer.xMin && inner.xMax <= outer.xMax;
 
     public static bool IsInsideY(this Rect outer, Rect inner) => inner.yMin >= outer.yMin && inner.yMax <= outer.yMax;
-    
+
     public static int ToInt(this Color color)
     {
         var a = Mathf.RoundToInt(color.a * 255) << 24;

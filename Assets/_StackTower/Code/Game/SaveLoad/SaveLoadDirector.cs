@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Game.Repositories;
-using StackTower.Code.Common;
 using StackTower.Code.DI;
 using StackTower.Code.Game.Logics;
 using StackTower.Code.Game.View;
@@ -17,8 +16,10 @@ internal class SaveLoadDirector : ISaveLoadDirector
     private readonly IShapeViewUIFactory _shapeFactory;
     private readonly SceneComponents _sceneComponents;
 
-    public SaveLoadDirector(IShapeViewUIFactory shapeFactory, SceneComponents sceneComponents,
-                            ITowerListSavable<CubeModel> savableTower, IRepository<CubeSavesContainer> repository)
+    public SaveLoadDirector(IShapeViewUIFactory shapeFactory,
+                            SceneComponents sceneComponents,
+                            ITowerListSavable<CubeModel> savableTower,
+                            IRepository<CubeSavesContainer> repository)
     {
         _shapeFactory = shapeFactory;
         _sceneComponents = sceneComponents;
@@ -58,11 +59,11 @@ internal class SaveLoadDirector : ISaveLoadDirector
         {
             var serializableModel = container.Chain[i];
             shapes[i] = _shapeFactory.CreateCube(serializableModel.Id, _sceneComponents.dragArea);
-            
+
             var position = new Vector2(serializableModel.PosX, serializableModel.PosY);
             var rectSize = new Vector2(serializableModel.RectWidth, serializableModel.RectHeight);
             var rect = new Rect(position, rectSize);
-            
+
             shapes[i].Position = rect.center;
             shapes[i].Model.Rect = rect;
             _savableTower.Chain.AddLast(shapes[i].Model);

@@ -18,12 +18,20 @@ internal class CubeViewUI : ShapeViewUI<CubeModel>, IDraggableObject<CubeViewUI>
     [SerializeField] private Image _image;
     [SerializeField] private float _animationDuration = 0.2f;
 
-    private Tween _animationTween;
-
     public event Action<PointerEventData, CubeViewUI> PointerDown;
     public event Action<PointerEventData, CubeViewUI> PointerDrag;
     public event Action<PointerEventData, CubeViewUI> PointerBeginDrag;
     public event Action<PointerEventData, CubeViewUI> PointerUp;
+
+    public RectTransform SelfTransform => _self;
+
+    public Vector3 Position
+    {
+        get => transform.position;
+        set => transform.position = value;
+    }
+
+    private Tween _animationTween;
 
     public void Initialize(CubeModel model, CubeShapeData shapeData)
     {
@@ -32,6 +40,16 @@ internal class CubeViewUI : ShapeViewUI<CubeModel>, IDraggableObject<CubeViewUI>
         _image.sprite = shapeData.Sprite;
         _image.color = shapeData.Color;
     }
+
+    public override void OnRelease()
+    {
+        KillTweenAnimations();
+        transform.localScale = Vector3.one;
+        transform.rotation = Quaternion.identity;
+        _canvasGroup.alpha = 1;
+    }
+
+    private void OnDestroy() => KillTweenAnimations();
 
     public void AnimatePutOnTower(Vector2 rectCenter)
     {
@@ -75,29 +93,11 @@ internal class CubeViewUI : ShapeViewUI<CubeModel>, IDraggableObject<CubeViewUI>
 
     private void KillTweenAnimations() => _animationTween?.Kill();
 
-    private void OnDestroy() => KillTweenAnimations();
-
-    public Vector3 Position
-    {
-        get => transform.position;
-        set => transform.position = value;
-    }
-
-    public RectTransform SelfTransform => _self;
-
     public void OnPointerDown(PointerEventData eventData) => PointerDown?.Invoke(eventData, this);
     public void OnBeginDrag(PointerEventData eventData) => PointerBeginDrag?.Invoke(eventData, this);
     public void OnDrag(PointerEventData eventData) => PointerDrag?.Invoke(eventData, this);
     public void OnPointerUp(PointerEventData eventData) => PointerUp?.Invoke(eventData, this);
 
-    public override void OnRelease()
-    {
-        KillTweenAnimations();
-        transform.localScale = Vector3.one;
-        transform.rotation = Quaternion.identity;
-        _canvasGroup.alpha = 1;
-    }
-    
 #if UNITY_EDITOR
     private void OnValidate() => this.With(x => x._image = GetComponent<Image>(), _image == null)
                                      .With(x => x._self = GetComponent<RectTransform>(), _self == null)

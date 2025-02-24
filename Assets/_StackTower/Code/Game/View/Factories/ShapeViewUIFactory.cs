@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Game.AssetContent;
 using Game.Pools;
 using StackTower.Code.Common;
@@ -33,7 +32,7 @@ internal class ShapeViewUIFactory : IShapeViewUIFactory, IInitializable
         var cubeData = _staticDataDirector.Cubes.First(x => x.Id == id);
         var prefab = _resource.LoadAsset<GameObject>(nameof(CubeViewUI)).GetComponent<CubeViewUI>();
         var cubeView = _pool.Get(prefab, parent);
-
+        cubeView.transform.localScale = prefab.transform.localScale;
         cubeView.Initialize(new CubeModel(cubeData.Id) {Rect = Rect.zero}, cubeData);
 
         return cubeView;

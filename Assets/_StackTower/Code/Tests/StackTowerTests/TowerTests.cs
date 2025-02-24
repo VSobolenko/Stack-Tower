@@ -16,7 +16,7 @@ internal class TowerTests
     [Test]
     public void TryInsertShape_InsertedShapeInFillRectX_ShouldInsertInRightPositionAndReturnTrue()
     {
-        var tower = new Tower<IStackableShape>(GetRectInCenter(1.5f, float.MaxValue));
+        var tower = new Tower<IStackableShape>(() => GetRectInCenter(1.5f, float.MaxValue));
 
         for (float i = 0f, x = 0f, y = 0f; i < 30; i++, y++)
         {
@@ -34,7 +34,7 @@ internal class TowerTests
     [Test]
     public void TryInsertShape_InsertedShapeOutsideFillArea_ShouldSkipInsertAndReturnFalse()
     {
-        var tower = new Tower<IStackableShape>(GetRectInCenter(float.MaxValue, 0.5f));
+        var tower = new Tower<IStackableShape>(() => GetRectInCenter(float.MaxValue, 0.5f));
         var stack = new[]
         {
             new Mock<IStackableShape>().SetupProperty(x => x.Rect, new Rect(Vector2.zero, NormalizedVector())),
@@ -51,7 +51,7 @@ internal class TowerTests
     [Test]
     public void TryInsertShape_NullShape_ShouldThrowException()
     {
-        var tower = new Tower<IStackableShape>(Rect.zero);
+        var tower = new Tower<IStackableShape>(() => Rect.zero);
 
         var ex = Assert.Throws<ArgumentNullException>(() => tower.TryInsertShape(null));
         StringAssert.StartsWith("Null shape Not supported!", ex.Message);
@@ -60,7 +60,7 @@ internal class TowerTests
     [Test]
     public void TryInsertShape_WhenNewShapeIntersectsWithLastTowerShape_ShouldInsertInRightPositionAndReturnTrue()
     {
-        var tower = new Tower<IStackableShape>(GetRectInCenter(float.MaxValue, float.MaxValue));
+        var tower = new Tower<IStackableShape>(() => GetRectInCenter(float.MaxValue, float.MaxValue));
         var stack = new[]
         {
             new Mock<IStackableShape>().SetupProperty(x => x.Rect, new Rect(Vector2.zero, NormalizedVector())),
@@ -78,7 +78,7 @@ internal class TowerTests
     [Test]
     public void TryInsertShape_WhenNewShapeNotIntersectsWithLastTowerShape_ShouldSkipInsertAndReturnFalse()
     {
-        var tower = new Tower<IStackableShape>(GetRectInCenter(float.MaxValue, float.MaxValue));
+        var tower = new Tower<IStackableShape>(() => GetRectInCenter(float.MaxValue, float.MaxValue));
         var stack = new[]
         {
             new Mock<IStackableShape>().SetupProperty(x => x.Rect, new Rect(Vector2.zero, NormalizedVector())),
@@ -94,7 +94,7 @@ internal class TowerTests
     [Test]
     public void TryInsertShape_WhenTowerIsEmpty_ShouldInsertInSameRectPosition()
     {
-        var tower = new Tower<IStackableShape>(GetRectInCenter(float.MaxValue, float.MaxValue));
+        var tower = new Tower<IStackableShape>(() => GetRectInCenter(float.MaxValue, float.MaxValue));
         var mockShape = new Mock<IStackableShape>();
         mockShape.SetupProperty(x => x.Rect, new Rect(Vector2.one, Vector2.zero));
 
@@ -107,7 +107,7 @@ internal class TowerTests
     [Test]
     public void RemoveShape_FirstShape_ShouldSecondReturnToFirstYPositionAndRecalculateOtherPosition()
     {
-        var tower = new Tower<IStackableShape>(GetRectInCenter(1.3f, float.MaxValue));
+        var tower = new Tower<IStackableShape>(() => GetRectInCenter(1.3f, float.MaxValue));
         var stack = new List<Mock<IStackableShape>>(30);
         Mock<IStackableShape> removed = null;
         for (float i = 0f, x = 0f, y = 0f; i < 30; i++, y++)
@@ -144,7 +144,7 @@ internal class TowerTests
     [Test]
     public void RemoveShape_LastShape_ShouldRemoveLastWithoutRecalculation()
     {
-        var tower = new Tower<IStackableShape>(GetRectInCenter(1.3f, float.MaxValue));
+        var tower = new Tower<IStackableShape>(() => GetRectInCenter(1.3f, float.MaxValue));
         var stack = new List<Mock<IStackableShape>>(30);
         Mock<IStackableShape> removed = null;
         for (float i = 0f, x = 0f, y = 0f; i < 30; i++, y++)
@@ -180,7 +180,7 @@ internal class TowerTests
     [Test]
     public void RemoveShape_NullShape_ShouldThrowException()
     {
-        var tower = new Tower<IStackableShape>(Rect.zero);
+        var tower = new Tower<IStackableShape>(() => Rect.zero);
 
         var ex = Assert.Throws<ArgumentNullException>(() => tower.TryRemoveShape(null));
         StringAssert.StartsWith("Null shape Not supported!", ex.Message);
@@ -189,7 +189,7 @@ internal class TowerTests
     [Test]
     public void RemoveShape_ShapeFromCenter_ShouldRecalculateShapePosition()
     {
-        var tower = new Tower<IStackableShape>(GetRectInCenter(1.3f, float.MaxValue));
+        var tower = new Tower<IStackableShape>(() => GetRectInCenter(1.3f, float.MaxValue));
         var stack = new List<Mock<IStackableShape>>(30);
         Mock<IStackableShape> removed = null;
         for (float i = 0f, x = 0f, y = 0f; i < 30; i++, y++)
@@ -225,7 +225,7 @@ internal class TowerTests
     [Test]
     public void RemoveShape_UnknownShape_ShouldSkipRemoved()
     {
-        var tower = new Tower<IStackableShape>(Rect.zero);
+        var tower = new Tower<IStackableShape>(() => Rect.zero);
         var mockShape = new Mock<IStackableShape>();
 
         var removeResult = tower.TryRemoveShape(mockShape.Object);
