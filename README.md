@@ -7,7 +7,7 @@
 - [VContainer](https://vcontainer.hadashikick.jp/)
 - [DoTween](https://dotween.demigiant.com/)
 - [SoftMaskForUGUI](https://github.com/mob-sakai/SoftMaskForUGUI)
-- [GameCoreLib (Object Pool, Resource Management, Repositories)](https://github.com/mob-sakai/SoftMaskForUGUI)
+- [GameCoreLib (Object Pool, Resource Management, Repositories)](https://github.com/VSobolenko/com.gexetr.gamecorelib)
 - [Editor Attributes (NaughtyAttributes)](https://github.com/dbrizov/NaughtyAttributes?tab=readme-ov-file#Installation)
 - [Addressables](https://docs.unity3d.com/Manual/com.unity.addressables.html)
 
